@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.puzzle {
+    width: 450px;
+    height: 450px;
+}
+
+.puzzle input {
+    width: 50px;
+    height: 50px;
+}
