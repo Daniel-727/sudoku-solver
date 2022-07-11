@@ -3,6 +3,7 @@ const puzzle = document.querySelector(".puzzle");
 const solve_btn = document.querySelector(".solve-btn");
 const squares = 81;
 const submission = [];
+const reset_btn = document.querySelector(".reset-btn");
 
 //creating our sudoku board
 for (let i = 0; i < squares; i++) {
@@ -28,31 +29,55 @@ const joinValue = () => {
 //code to call the API
 const solve = () => {
     joinValue();
-    const data = submission.join("");
+    const data = {numbers: submission.join("")};
+    console.log(data);
 
-    const options = {
+    fetch("http://localhost:8000/solve", {
         method: "POST",
-        url: "https://solve-sudoku.p.rapidapi.com/",
         headers: {
-            "content-type": "application/json",
-            "X-RapidAPI-Key":
-                "359137b4e2mshc315a010aa134c3p180fb4jsn1855a5ea97a3",
-            "X-RapidAPI-Host": "solve-sudoku.p.rapidapi.com",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         },
-        data: { puzzle: data },
-    };
-
-    axios
-        .request(options)
-        .then((response) => {
-            console.log(response.data);
+        body: JSON.stringify(data)
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            populate(data);
         })
         .catch((error) => {
-            console.error(error);
+            console.error("Error:", error);
         });
 };
 
 //taking the response data and populating our sudoku board
-const populate = () => {};
+const populate = ({ solvable, solution }) => {
+    if (solvable === true) {
+        const inputArray = document.querySelectorAll("input");
+        let i = 0;
+        inputArray.forEach((input) => {
+            input.value = solution[i];
+            i++;
+        });
+    } else {
+        console.log("This board is not solvable");
+    }
+};
 
+//resets sudoku board
+const reset = () => {
+    const inputArray = document.querySelectorAll("input");
+    inputArray.forEach((input) => {
+        input.value = "";
+    });
+};
+
+reset_btn.addEventListener("click", reset);
 solve_btn.addEventListener("click", solve);
+
+/*Testing Code
+const test_string =
+    "912345687345687129687129345138564792294718536576293814859436271461872953723951468";
+    test_btn.addEventListener("click", populate);
+    const test_btn = document.querySelector(".test-btn");
+*/
